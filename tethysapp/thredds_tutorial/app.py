@@ -6,16 +6,12 @@ class ThreddsTutorial(TethysAppBase):
     Tethys app class for Thredds Tutorial.
     """
 
-    name = 'Thredds Tutorial'
+    name = 'THREDDS Tutorial'
     index = 'thredds_tutorial:home'
-    icon = 'thredds_tutorial/images/icon.gif'
+    icon = 'thredds_tutorial/images/unidata_logo.png'
     package = 'thredds_tutorial'
     root_url = 'thredds-tutorial'
-    color = '#8e44ad'
-    description = ''
-    tags = ''
-    enable_feedback = False
-    feedback_emails = []
+    color = '#008e8d'
 
     def url_maps(self):
         """
