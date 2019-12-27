@@ -33,6 +33,11 @@ class ThreddsTutorial(TethysAppBase):
                 url='thredds-tutorial/get-wms-layers',
                 controller='thredds_tutorial.controllers.get_wms_layers'
             ),
+            UrlMap(
+                name='get_time_series_plot',
+                url='thredds-tutorial/get-time-series-plot',
+                controller='thredds_tutorial.controllers.get_time_series_plot'
+            ),
         )
 
         return url_maps

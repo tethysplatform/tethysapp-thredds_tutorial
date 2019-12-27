@@ -19,12 +19,13 @@ var LEAFLET_MAP = (function() {
     var public_interface,    // Object returned by the module
         m_map,               // The Leaflet Map
         m_layer,             // The layer
-        m_td_layer,          // The Time-Dimension layer
         m_layer_meta,        // Map of layer metadata indexed by variable
+        m_td_layer,          // The time dimension layer
         m_curr_dataset,      // The current selected dataset
         m_curr_variable,     // The current selected variable/layer
         m_curr_style,        // The current selected style
-        m_curr_wms_url;      // The current WMS url
+        m_curr_wms_url,      // The current WMS url
+        m_drawn_features;    // Layer for drawn items
 
     /************************************************************************
     *                    PRIVATE FUNCTION DECLARATIONS
@@ -40,6 +41,10 @@ var LEAFLET_MAP = (function() {
 
     // Loader Methods
     var show_loader, hide_loader;
+
+    // Plot Methods
+    var init_plot_at_location, show_plot_modal, update_plot;
+
 
     /************************************************************************
     *                    PRIVATE FUNCTION IMPLEMENTATIONS
@@ -68,6 +73,11 @@ var LEAFLET_MAP = (function() {
 
         // Clear the legend
         clear_legend();
+
+        // Clear drawn features
+        if (m_drawn_features) {
+            m_drawn_features.clearLayers();
+        }
 
         // Layer
         m_layer = L.tileLayer.wms(m_curr_wms_url, {
@@ -217,6 +227,83 @@ var LEAFLET_MAP = (function() {
         $('#loader').removeClass('show');
     };
 
+    // Plot Methods
+    init_plot_at_location = function() {
+        // Initialize layer for drawn features
+        m_drawn_features = new L.FeatureGroup();
+        m_map.addLayer(m_drawn_features);
+
+        // Initialize draw controls
+        let draw_control = new L.Control.Draw({
+            draw: {
+                polyline: false,
+                polygon: false,
+                circle: false,
+                rectangle: false,
+            }
+        });
+
+        m_map.addControl(draw_control);
+
+        // Bind to draw event
+        m_map.on(L.Draw.Event.CREATED, function(e) {
+            // Remove all layers (only show one location at a time)
+            m_drawn_features.clearLayers();
+
+            // Add layer with the new features
+            let new_features_layer = e.layer;
+            m_drawn_features.addLayer(new_features_layer);
+
+            // Load the plot
+            update_plot(new_features_layer);
+        });
+    };
+
+    show_plot_modal = function() {
+        // Replace last plot with animated loading image
+        $('#plot-container').html(
+            '<div id="plot-loader">' +
+                '<img src="/static/thredds_tutorial/images/plot-loader.gif">' +
+                '<p>Loading... Please wait.</p>' +
+            '</div>'
+        );
+
+        // Show the modal
+        $('#plot-modal').modal('show');
+    };
+
+    update_plot = function(location_layer) {
+        // Reset and show plot modal
+        show_plot_modal();
+
+        // Serialize geometry for request
+        let geometry = location_layer.toGeoJSON();
+        let geometry_str = JSON.stringify(geometry);
+
+        // Build data packet
+        let data = {
+            geometry: geometry_str,
+            variable: m_curr_variable,
+            dataset: m_curr_dataset,
+        };
+
+        // Get available time range from time control on map (if any)
+        let available_times = m_map.timeDimension.getAvailableTimes()
+        if (available_times && available_times.length) {
+            data.start_time = available_times[0]
+            data.end_time = available_times[available_times.length - 1]
+        }
+
+        // Get vertical level
+        let vertical_level = $('#vertical_level').val();
+        if (vertical_level) {
+            data.vertical_level = vertical_level;
+        }
+
+        // Call load
+        $('#plot-container').load('get-time-series-plot/', data);
+    };
+
     /************************************************************************
     *                        DEFINE PUBLIC INTERFACE
     *************************************************************************/
@@ -238,6 +325,7 @@ var LEAFLET_MAP = (function() {
     $(function() {
         init_map();
         init_controls();
+        init_plot_at_location();
     });
 
     return public_interface;
