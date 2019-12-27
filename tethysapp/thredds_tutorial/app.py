@@ -28,6 +28,11 @@ class ThreddsTutorial(TethysAppBase):
                 url='thredds-tutorial',
                 controller='thredds_tutorial.controllers.home'
             ),
+            UrlMap(
+                name='get_wms_layers',
+                url='thredds-tutorial/get-wms-layers',
+                controller='thredds_tutorial.controllers.get_wms_layers'
+            ),
         )
 
         return url_maps
