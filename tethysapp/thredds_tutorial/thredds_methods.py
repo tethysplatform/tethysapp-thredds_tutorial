@@ -1,6 +1,6 @@
+from owslib.wms import WebMapService
 import logging
 from datetime import datetime, timedelta
-from owslib.wms import WebMapService
 
 log = logging.getLogger(__name__)
 
@@ -10,7 +10,7 @@ def parse_datasets(catalog):
     Collect all available datasets that have the WMS service enabled.
 
     Args:
-        catalog(siphon.catalog.TDSCatalog): a Siphon catalog object bound to a valid THREDDS service.
+        catalog(siphon.catalog.TDSCatalog): A Siphon catalog object bound to a valid THREDDS service.
 
     Returns:
         list<2-tuple<dataset_name, wms_url>: One 2-tuple for each dataset.
@@ -22,7 +22,7 @@ def parse_datasets(catalog):
         if dataset_wms_url:
             datasets.append((dataset_name, f'{dataset_name};{dataset_wms_url}'))
 
-    for catalog_name, catalog_obj in catalog.catalog_refs.items():
+    for _, catalog_obj in catalog.catalog_refs.items():
         d = parse_datasets(catalog_obj.follow())
         datasets.extend(d)
 

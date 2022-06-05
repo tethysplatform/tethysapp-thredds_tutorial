@@ -13,8 +13,6 @@ requirements:
       - netcdf4
       - siphon
       - owslib
-      - numpy
-      - pandas
   pip:
 
 post:

@@ -153,14 +153,10 @@ var LEAFLET_MAP = (function() {
         // Show loader
         show_loader();
 
-        // Use AJAX endpoint to get WMS layers
-        $.ajax({
-            url: './get-wms-layers/',
-            method: 'GET',
-            data: {
-                'wms_url': m_curr_wms_url
-            }
-        }).done(function(data) {
+        // Use REST endpoint to get WMS layers
+        fetch('./get-wms-layers/?' + new URLSearchParams({'wms_url': m_curr_wms_url}))
+          .then((response) => response.json())
+          .then((data) => {
             if (!data.success) {
                 console.log('An unexpected error occurred!');
                 return;
@@ -189,7 +185,7 @@ var LEAFLET_MAP = (function() {
 
             // Hide the loader
             hide_loader();
-        });
+          });
     };
 
     // Update the available style options on the style control
