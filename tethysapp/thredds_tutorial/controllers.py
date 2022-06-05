@@ -1,15 +1,15 @@
-import logging
 from django.shortcuts import render
-from django.http import HttpResponseNotAllowed, JsonResponse
-from tethys_sdk.permissions import login_required
+from tethys_sdk.routing import controller
 from tethys_sdk.gizmos import SelectInput
 from .app import ThreddsTutorial as app
+from django.http import HttpResponseNotAllowed, JsonResponse
 from .thredds_methods import parse_datasets, get_layers_for_wms
+import logging
 
 log = logging.getLogger(__name__)
 
 
-@login_required()
+@controller
 def home(request):
     """
     Controller for the app home page.
@@ -29,8 +29,10 @@ def home(request):
         multiple=False,
         options=datasets,
         initial=initial_dataset_option,
-        select2_options={'placeholder': 'Select a dataset',
-                         'allowClear': False}
+        select2_options={
+            'placeholder': 'Select a dataset',
+            'allowClear': False
+        }
     )
 
     variable_select = SelectInput(
@@ -38,8 +40,10 @@ def home(request):
         name='variable',
         multiple=False,
         options=(),
-        select2_options={'placeholder': 'Select a variable',
-                         'allowClear': False}
+        select2_options={
+            'placeholder': 'Select a variable',
+            'allowClear': False
+        }
     )
 
     style_select = SelectInput(
@@ -47,8 +51,10 @@ def home(request):
         name='style',
         multiple=False,
         options=(),
-        select2_options={'placeholder': 'Select a style',
-                         'allowClear': False}
+        select2_options={
+            'placeholder': 'Select a style',
+            'allowClear': False
+        }
     )
 
     context = {
@@ -59,7 +65,7 @@ def home(request):
     return render(request, 'thredds_tutorial/home.html', context)
 
 
-@login_required()
+@controller
 def get_wms_layers(request):
     json_response = {'success': False}
 

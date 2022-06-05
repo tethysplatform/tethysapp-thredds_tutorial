@@ -3,8 +3,8 @@
 
 {% block styles %}
   {{ block.super }}
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+   integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
    crossorigin=""/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
   <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
@@ -13,8 +13,8 @@
 
 {% block global_scripts %}
   {{ block.super }}
-  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+  <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+   integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
    crossorigin=""></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/iso8601-js-period@0.2.1/iso8601.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.min.js"></script>
@@ -28,23 +28,24 @@
 {% block header_buttons %}
 {% endblock %}
 
+{% block app_content %}
+  <div id="leaflet-map"></div>
+{% endblock %}
+
+{% block app_actions_override %}
+{% endblock %}
+
 {% block app_navigation_items %}
   <li class="title">Query</li>
   {% gizmo dataset_select %}
   {% gizmo variable_select %}
   {% gizmo style_select %}
-  <div id="legend"></div>
-{% endblock %}
-
-{% block app_content %}
-  <div id="leaflet-map"></div>
+  <div id="legend">
+  </div>
 {% endblock %}
 
 {% block after_app_content %}
   <div id="loader">
     <img src="{% static 'thredds_tutorial/images/map-loader.gif' %}">
   </div>
-{% endblock %}
-
-{% block app_actions_override %}
 {% endblock %}
