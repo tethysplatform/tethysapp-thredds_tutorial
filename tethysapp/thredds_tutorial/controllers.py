@@ -1,3 +1,4 @@
+from urllib.parse import urlparse
 from django.shortcuts import render
 from tethys_sdk.routing import controller
 from tethys_sdk.gizmos import SelectInput
@@ -26,6 +27,22 @@ def home(request):
     # Retrieve dataset options from the THREDDS service
     log.info('Retrieving Datasets...')
     datasets = parse_datasets(catalog)
+    
+    # Replace private url with public url
+    # TODO: move into parse_datasets and replace as the initial datasets array is built
+    public_endpoint = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_public_endpoint=True)
+    if public_endpoint:
+        private_endpoint = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_endpoint=True)
+        public_url = urlparse(private_endpoint)
+        private_url = urlparse(public_endpoint)
+        public_loc = f'{public_url.scheme}://{public_url.netloc}'  # e.g.: https://some-host:8083
+        private_loc = f'{private_url.scheme}://{private_url.netloc}'  # e.g.: http://localhost:8080
+        log.info(public_loc)
+        log.info(private_loc)
+        datasets = [(ds_name, ds_url.replace(private_loc, public_loc)) for ds_name, ds_url in datasets]
+        log.info(datasets)
+
+    # Get initial option for dataset selector
     initial_dataset_option = datasets[0]
     log.debug(datasets)
     log.debug(initial_dataset_option)
