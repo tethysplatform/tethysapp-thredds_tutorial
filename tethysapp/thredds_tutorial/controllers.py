@@ -1,27 +1,24 @@
 from django.shortcuts import render
 from tethys_sdk.routing import controller
-from tethys_sdk.gizmos import SelectInput
-from .app import ThreddsTutorial as app
-from django.http import HttpResponseNotAllowed, JsonResponse
-from .thredds_methods import parse_datasets, get_layers_for_wms
+from tethys_sdk.gizmos import SelectInput, PlotlyView
+from .app import App
+from django.http import HttpResponseNotAllowed, JsonResponse, HttpResponse
+from .thredds_methods import parse_datasets, get_layers_for_wms, extract_time_series_at_location
+from .figure import generate_figure
+import requests
 import logging
 import geojson
 from datetime import datetime
 from simplejson.errors import JSONDecodeError
-from tethys_sdk.gizmos import SelectInput, PlotlyView
-from .figure import generate_figure
-from .thredds_methods import parse_datasets, get_layers_for_wms, extract_time_series_at_location
-
 
 log = logging.getLogger(__name__)
-
 
 @controller
 def home(request):
     """
     Controller for the app home page.
     """
-    catalog = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
+    catalog = App.get_spatial_dataset_service(App.THREDDS_SERVICE_NAME, as_engine=True)
 
     # Retrieve dataset options from the THREDDS service
     log.info('Retrieving Datasets...')
@@ -69,8 +66,7 @@ def home(request):
         'variable_select': variable_select,
         'style_select': style_select,
     }
-    return render(request, 'thredds_tutorial/home.html', context)
-
+    return App.render(request, 'home.html', context)
 
 @controller
 def get_wms_layers(request):
@@ -95,7 +91,21 @@ def get_wms_layers(request):
 
     return JsonResponse(json_response)
 
-
+@controller(name='getWMSImageFromServer', url='getWMSImageFromServer/')
+def wms_image_from_server(request):
+    try:
+        if 'main_url' in request.GET:
+            request_url = request.GET.get('main_url')
+            query_params = request.GET.dict()
+            query_params.pop('main_url', None)
+            r = requests.get(request_url, params=query_params)
+            return HttpResponse(r.content, content_type="image/png")
+        else:
+            return JsonResponse({})
+    except Exception as e:
+        log.info(e)
+        return JsonResponse({'error': e})
+    
 @controller
 def get_time_series_plot(request):
     context = {'success': False}
@@ -129,7 +139,7 @@ def get_time_series_plot(request):
             end_time = datetime.fromtimestamp(e)
 
         # Retrieve the connection to the THREDDS server
-        catalog = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
+        catalog = App.get_spatial_dataset_service(App.THREDDS_SERVICE_NAME, as_engine=True)
 
         time_series = extract_time_series_at_location(
             catalog=catalog,
@@ -163,4 +173,4 @@ def get_time_series_plot(request):
         context['error'] = f'An unexpected error has occurred. Please try again.'
         log.exception('An unexpected error occurred.')
 
-    return render(request, 'thredds_tutorial/plot.html', context)
+    return App.render(request, 'plot.html', context)
