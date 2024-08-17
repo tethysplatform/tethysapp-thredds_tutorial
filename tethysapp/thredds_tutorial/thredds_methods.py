@@ -1,8 +1,9 @@
 from owslib.wms import WebMapService
+import requests
+import chardet
 import logging
 
 log = logging.getLogger(__name__)
-
 
 def parse_datasets(catalog):
     """
@@ -14,8 +15,8 @@ def parse_datasets(catalog):
     Returns:
         list<2-tuple<dataset_name, wms_url>: One 2-tuple for each dataset.
     """
-    datasets = []
-
+    datasets = []   
+    
     for dataset_name, dataset_obj in catalog.datasets.items():
         dataset_wms_url = dataset_obj.access_urls.get('wms', None)
         if dataset_wms_url:
@@ -24,9 +25,8 @@ def parse_datasets(catalog):
     for _, catalog_obj in catalog.catalog_refs.items():
         d = parse_datasets(catalog_obj.follow())
         datasets.extend(d)
-
+    
     return datasets
-
 
 def get_layers_for_wms(wms_url):
     """
@@ -38,7 +38,21 @@ def get_layers_for_wms(wms_url):
     Returns:
         dict<layer_name:dict<styles,bbox>>: A dictionary with a key for each WMS layer available and a dictionary value containing metadata about the layer.
     """
-    wms = WebMapService(wms_url)
+    params = {
+        'service': 'WMS',
+        'version': '1.1.1',
+        'request': 'GetCapabilities'
+    }
+    request_url = f"{wms_url}?{'&'.join(f'{key}={value}' for key, value in params.items())}"
+    
+    response = requests.get(request_url)
+    encoding = chardet.detect(response.content)['encoding']
+    
+    response_content = response.content.decode(encoding)
+    utf8_content = response_content.encode('utf-8')
+            
+    wms = WebMapService(None, xml=utf8_content)
+
     layers = wms.contents
     log.debug('WMS Contents:')
     log.debug(layers)

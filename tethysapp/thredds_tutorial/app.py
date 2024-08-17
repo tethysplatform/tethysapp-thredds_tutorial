@@ -1,13 +1,11 @@
 from tethys_sdk.base import TethysAppBase
 from tethys_sdk.app_settings import SpatialDatasetServiceSetting
 
-
-class ThreddsTutorial(TethysAppBase):
+class App(TethysAppBase):
     """
     Tethys app class for Thredds Tutorial.
     """
-
-    name = 'THREDDS Tutorial'
+    name = 'Thredds Tutorial'
     description = ''
     package = 'thredds_tutorial'  # WARNING: Do not change this value
     index = 'home'
