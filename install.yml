@@ -10,7 +10,9 @@ requirements:
   skip: false
   conda:
     channels:
+      - conda-forge
     packages:
+      - chardet
 
   pip:
 
