@@ -1,7 +1,6 @@
 from tethys_sdk.base import TethysAppBase
 from tethys_sdk.app_settings import SpatialDatasetServiceSetting
 
-
 class App(TethysAppBase):
     """
     Tethys app class for Thredds Tutorial.

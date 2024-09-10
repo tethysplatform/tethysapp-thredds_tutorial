@@ -13,7 +13,6 @@ from simplejson.errors import JSONDecodeError
 
 log = logging.getLogger(__name__)
 
-
 @controller
 def home(request):
     """
@@ -175,3 +174,4 @@ def get_time_series_plot(request):
         log.exception('An unexpected error occurred.')
 
     return App.render(request, 'plot.html', context)
+
