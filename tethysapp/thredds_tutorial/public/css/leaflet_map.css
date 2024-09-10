@@ -1,0 +1,18 @@
+/* Map Format */
+#app-content-wrapper #app-content {
+    height: 100%;
+}
+
+#inner-app-content {
+    height: 100%;
+    padding: 0;
+}
+
+#leaflet-map {
+    height: 100%;
+}
+
+/* Remove padding on bottom where app-actions section used to be */
+#app-content-wrapper #app-content {
+    padding-bottom: 0;
+}

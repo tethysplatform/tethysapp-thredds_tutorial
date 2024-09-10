@@ -10,10 +10,14 @@ requirements:
   skip: false
   conda:
     channels:
-      - conda-forge
+    - conda-forge
     packages:
-      - chardet
-
+    - netcdf4
+    - siphon
+    - owslib
+    - plotly
+    - geojson
+    - chardet
   pip:
 
   npm:
