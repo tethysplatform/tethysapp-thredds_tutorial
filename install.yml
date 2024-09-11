@@ -15,9 +15,9 @@ requirements:
     - netcdf4
     - siphon
     - owslib
+    - chardet
     - plotly
     - geojson
-    - chardet
   pip:
 
   npm:
