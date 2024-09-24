@@ -174,3 +174,4 @@ def get_time_series_plot(request):
         log.exception('An unexpected error occurred.')
 
     return App.render(request, 'plot.html', context)
+
