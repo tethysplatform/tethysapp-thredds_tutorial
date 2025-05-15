@@ -192,6 +192,8 @@ var LEAFLET_MAP = (function() {
 
     // Update the available style options on the style control
     update_style_control = function() {
+        $('#style').empty();
+
         let first_option = true;
         for (var style in m_layer_meta[m_curr_variable].styles) {
             if (first_option) {
